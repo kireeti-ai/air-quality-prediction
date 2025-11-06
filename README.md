@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🌫️ Air Quality Prediction
 
 This is a full-stack web application that predicts the **Air Quality Index (AQI)** in real-time.
@@ -138,6 +138,4 @@ AirQualityPrediction/
 **Kireeti V**  
 📍 Amrita Vishwa Vidyapeetham  
 💼 [GitHub: @kireeti-ai](https://github.com/kireeti-ai)
-=======
-# air-quality-prediction
->>>>>>> 7c31f92e65fc2e7cf6a8942d9b11095a04384842
+
