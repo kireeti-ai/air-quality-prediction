@@ -73,7 +73,7 @@ const FavoriteCityCard = ({ city, onSelect }) => {
   useEffect(() => {
     const fetchFavorite = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/predict', {
+        const response = await fetch('http://127.0.0.1:5001/api/predict', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ city }),
@@ -118,7 +118,7 @@ export default function HomePage() {
   const [favorites, setFavorites] = useLocalStorage('aqiFavorites', ['Delhi', 'Mumbai']);
   const [tip] = useState(() => tips[Math.floor(Math.random() * tips.length)]);
 
-  const API_URL = 'http://127.0.0.1:5000/api/predict';
+  const API_URL = 'http://127.0.0.1:5001/api/predict';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
