@@ -1,141 +1,218 @@
-
 # 🌫️ Air Quality Prediction
 
-This is a full-stack web application that predicts the **Air Quality Index (AQI)** in real-time.
-
-It consists of a **Python/Flask backend** that serves a machine learning model, and a **React/Vite/Tailwind frontend** that provides a user interface to get live predictions.
-
----
-
-##  Tech Stack
-
-- **Backend:** Python, Flask, scikit-learn, joblib, pandas  
-- **Frontend:** React.js, Vite, Tailwind CSS, react-router-dom  
-- **Data Source:** [OpenWeather API](https://openweathermap.org/)
+A full-stack web application that predicts the Air Quality Index (AQI) in real time. This repository includes:
+- A Python/Flask backend that serves a pre-trained ML model.
+- A React + Vite + Tailwind frontend for the UI.
+- Jupyter notebooks used for data exploration and model training.
 
 ---
 
-## Model Details
+## Table of contents
 
-The backend uses a pre-trained **Random Forest Regressor (`aqi_model_8_features.pkl`)** to predict the AQI.
-
-- **Model:** `RandomForestRegressor` with 500 estimators  
-- **Features:** The model was trained on 8 key pollutant features:  
-  `PM2.5`, `PM10`, `NO`, `NO2`, `NH3`, `CO`, `SO2`, and `O3`
-
----
-
-##  Prerequisites
-
-Before you begin, make sure you have:
-
-1. **Python 3.x**  
-2. **Node.js (v18 or higher)**  
-3. A free **API Key** from [OpenWeather](https://openweathermap.org/)  
-4. The trained model file `aqi_model_8_features.pkl` (generated from the `AirQuality.ipynb` notebook)
+- Tech stack
+- Model details
+- Prerequisites
+- Installation & setup (Backend, Frontend)
+- Running with Docker
+- Jenkins CI
+- Usage
+- Project structure
+- Future enhancements
+- Author
 
 ---
 
-##  Installation & Setup
+## Tech stack
 
-This project requires running **two servers** (backend and frontend) in separate terminals.
+- Backend: Python, Flask, scikit-learn, joblib, pandas
+- Frontend: React.js, Vite, Tailwind CSS, react-router-dom
+- Notebooks: Jupyter Notebook (data exploration & model training)
+- Data source: OpenWeather API
 
-### 1️ Clone the Repository
+---
 
+## Model details
+
+- Model file: Backend/aqi_model_8_features.pkl
+- Model type: RandomForestRegressor (trained with 500 estimators)
+- Features used: PM2.5, PM10, NO, NO2, NH3, CO, SO2, O3
+- Notebook: See Jupyter notebooks (e.g., AirQuality.ipynb) for training workflow and data preprocessing
+
+---
+
+## Prerequisites
+
+- Python 3.x (3.8+ recommended)
+- Node.js (v18+ recommended) and npm/yarn
+- An OpenWeather API key
+- The trained model file: Backend/aqi_model_8_features.pkl (generated from the notebook)
+
+---
+
+## Installation & setup
+
+This project runs two servers (backend and frontend) during development. The repository directories are named `Backend` and `Frontend` (case-sensitive).
+
+Clone the repository:
 ```bash
-git clone https://github.com/kireeti-ai/AirQualityPrediction.git
-cd AirQualityPrediction
+git clone https://github.com/kireeti-ai/air-quality-prediction.git
+cd air-quality-prediction
 ```
 
----
+### Backend (Terminal 1)
 
-### 2️ Backend Setup (Terminal 1)
+1. Enter the backend directory:
+```bash
+cd Backend
+```
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Place your trained model file (`aqi_model_8_features.pkl`) inside this folder.
+2. Place your trained model:
+- Put `aqi_model_8_features.pkl` in the `Backend/` directory.
+
 3. Create and activate a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+- macOS / Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+- Windows (PowerShell):
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
 4. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-5. **Configure API Key:**
-   Open `app.py` and replace:
-   ```python
-   API_KEY = "YOUR_API_KEY_HERE"
-   ```
-   with your actual **OpenWeather API key**.
-6. Run the backend server:
-   ```bash
-   python3 app.py
-   ```
-   The backend will start at **http://127.0.0.1:5000**
+```bash
+pip install -r requirements.txt
+```
 
----
+5. Configure the OpenWeather API key:
+- Recommended: set an environment variable (preferred over editing source files).
+  - macOS / Linux:
+    ```bash
+    export OPENWEATHER_API_KEY="your_api_key_here"
+    ```
+  - Windows (PowerShell):
+    ```powershell
+    $env:OPENWEATHER_API_KEY="your_api_key_here"
+    ```
+- If the backend code expects a constant in `app.py`, consider updating `app.py` to read from the environment:
+```python
+import os
+API_KEY = os.getenv("OPENWEATHER_API_KEY", "YOUR_API_KEY_HERE")
+```
 
-### 3️ Frontend Setup (Terminal 2)
+6. Run the backend:
+```bash
+python3 app.py
+```
+The backend will listen at http://127.0.0.1:5000 by default (confirm port in `app.py`).
 
-1. Open a new terminal and navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+### Frontend (Terminal 2)
+
+1. Open a new terminal and go to the frontend directory:
+```bash
+cd Frontend
+```
+
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-   Your app will open at **http://localhost:5173** (or a similar port).
+```bash
+npm install
+```
+or
+```bash
+yarn
+```
+
+3. Start the dev server:
+```bash
+npm run dev
+```
+The frontend will be available at http://localhost:5173 (port may vary).
 
 ---
 
-##  Usage
+## Running with Docker / docker-compose
 
-1. Enter a **city name** or **pollutant values** in the frontend UI.  
-2. The backend fetches live weather/pollution data via the OpenWeather API.  
-3. The trained ML model predicts the **AQI** in real time.  
-4. The result is displayed on the frontend dashboard.
+A docker-compose.yml exists at the repository root. You can build and run both services with Docker if you prefer containerized runs.
+
+1. Ensure Docker and docker-compose are installed.
+2. Copy or set your OpenWeather API key in an env file:
+```bash
+echo "OPENWEATHER_API_KEY=your_api_key_here" > .env
+```
+3. Run:
+```bash
+docker-compose up --build
+```
+
+Check docker-compose.yml for service names and port mappings and adjust the `.env` placement or docker-compose configuration if needed.
 
 ---
 
-##  Project Structure
+## Jenkins CI
+
+This repository includes a Jenkinsfile at the repository root which provides a starting pipeline for CI. The Jenkins pipeline typically runs the following stages (customize as needed):
+
+- Checkout: pull the repository from GitHub
+- Setup backend: create a Python environment and install dependencies
+- Backend tests / lint: run unit tests or linting if available
+- Setup frontend: install node dependencies and run build or tests
+- Build Docker images (optional): build backend/frontend images and push to a registry
+- Deploy (optional): deploy to a test/staging environment
+
+How to use the Jenkinsfile locally or on your Jenkins server:
+1. Create a Jenkins pipeline job and point it to this repository.
+2. Ensure Jenkins has credentials and environment variables configured (e.g., OPENWEATHER_API_KEY, Docker registry credentials).
+3. If using agents, make sure agents have Docker, Python and Node.js installed (or use containerized agents).
+
+If you want, I can extract and document the exact stages defined in the current Jenkinsfile and add a short section here with the pipeline steps and required environment variables.
+
+---
+
+## Usage
+
+1. Start the backend and frontend (or run docker-compose).
+2. In the frontend UI, enter a city name or submit pollutant values.
+3. The backend fetches weather/pollution data from OpenWeather (if needed), passes features to the ML model, and returns an AQI prediction.
+4. Predictions and (optionally) pollutant breakdowns are displayed on the frontend.
+
+---
+
+## Project structure
 
 ```
-AirQualityPrediction/
-├── backend/
+air-quality-prediction/
+├── Backend/
 │   ├── app.py
 │   ├── requirements.txt
 │   ├── aqi_model_8_features.pkl
 │   └── ...
-├── frontend/
+├── Frontend/
 │   ├── src/
 │   ├── package.json
 │   └── ...
+├── docker-compose.yml
+├── Jenkinsfile
 └── README.md
 ```
 
----
-
-##  Future Enhancements
-
-- Add AQI trend visualization graphs  
-- Support for multiple cities  
-- Historical AQI data storage using PostgreSQL or MongoDB  
-- Docker-based deployment  
+Note: The repository contains Jupyter notebooks used to prepare and train the model (look for files like `AirQuality.ipynb`).
 
 ---
 
-##  Author
+## Future enhancements
 
-**Kireeti V**  
-📍 Amrita Vishwa Vidyapeetham  
-💼 [GitHub: @kireeti-ai](https://github.com/kireeti-ai)
+- Add AQI trend visualization (charts) in the frontend
+- Support batch/historical queries and multiple cities
+- Persist historical AQI data using PostgreSQL or MongoDB
+- Add CI/CD and automated tests (Jenkinsfile present as a starting point)
+- Provide a safer secrets-management approach (don't store API keys in source)
 
+---
+
+## Author
+
+**Kireeti V**
+📍 Amrita Vishwa Vidyapeetham
+💼 GitHub: @kireeti-ai (https://github.com/kireeti-ai)
