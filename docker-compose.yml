@@ -1,23 +1,22 @@
 version: '3.8'
 
 services:
-  # The Backend Service
+  # The Backend 
   backend:
     build: ./Backend
     container_name: aqi-backend
     ports:
-      # We'll keep using 5001 on your Mac, since 5000 is busy
+      
       - "5001:5000"
     restart: unless-stopped
 
-  # The Frontend Service
+  # The Frontend 
   frontend:
     build: ./Frontend
     container_name: aqi-frontend
     ports:
-      # We'll map port 8080 on your Mac to port 80 in the container
+   
       - "8080:80"
     restart: unless-stopped
-    # This tells the frontend to wait for the backend to start
     depends_on:
       - backend
