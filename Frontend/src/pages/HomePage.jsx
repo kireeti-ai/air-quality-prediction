@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { HeartIcon as HeartOutlineIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import AqiGauge from '../components/AqiGauge.jsx';
+import { API_ENDPOINTS } from '../config.js';
 
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
@@ -74,7 +75,7 @@ const FavoriteCityCard = ({ city, onSelect }) => {
     const fetchFavorite = async () => {
       try {
         // --- THIS LINE IS UPDATED ---
-        const response = await fetch('/api/predict', {
+        const response = await fetch(API_ENDPOINTS.PREDICT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ city }),
@@ -119,9 +120,6 @@ export default function HomePage() {
   const [favorites, setFavorites] = useLocalStorage('aqiFavorites', ['Delhi', 'Mumbai']);
   const [tip] = useState(() => tips[Math.floor(Math.random() * tips.length)]);
 
-  // --- THIS LINE IS UPDATED ---
-  const API_URL = '/api/predict';
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!city) return;
@@ -134,7 +132,7 @@ export default function HomePage() {
     setError('');
     setShowDetails(false);
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_ENDPOINTS.PREDICT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ city: cityName }),

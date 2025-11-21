@@ -211,6 +211,41 @@ Note: The repository contains Jupyter notebooks used to prepare and train the mo
 
 ---
 
+## Deployment on Render
+
+This application can be deployed to Render (https://render.com) as separate services.
+
+### Backend Deployment
+
+1. Create a new **Web Service** in Render
+2. Connect your GitHub repository
+3. Configure the service:
+   - **Root Directory**: `Backend`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn -w 4 -b 0.0.0.0:5000 app:app`
+   - **Environment**: Python 3
+4. Add environment variables if needed (e.g., `OPENWEATHER_API_KEY`)
+5. Deploy the service and note the URL (e.g., `https://your-backend.onrender.com`)
+
+**Note**: The `requirements.txt` includes `gunicorn` which is required for production deployment on Render.
+
+### Frontend Deployment
+
+1. Create a new **Static Site** in Render
+2. Connect your GitHub repository
+3. Configure the service:
+   - **Root Directory**: `Frontend`
+   - **Build Command**: `npm install && npm run build`
+   - **Publish Directory**: `dist`
+4. Add environment variable:
+   - **Key**: `VITE_API_URL`
+   - **Value**: `https://your-backend.onrender.com/api` (use your actual backend URL)
+5. Deploy the static site
+
+For detailed deployment instructions, see [Frontend/DEPLOYMENT.md](Frontend/DEPLOYMENT.md).
+
+---
+
 ## Author
 
 **Kireeti V**
