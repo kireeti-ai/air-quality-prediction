@@ -7,7 +7,12 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app) 
 
-model = joblib.load('aqi_model_8_features.pkl')
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, "aqi_model_8_features.pkl")
+
+model = joblib.load(model_path)
 
 def get_AirQuality(x):
     if x <= 50:
