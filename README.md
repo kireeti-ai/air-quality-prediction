@@ -45,7 +45,7 @@ A full-stack web application that predicts the Air Quality Index (AQI) in real t
 - Python 3.x (3.8+ recommended)
 - Node.js (v18+ recommended) and npm/yarn
 - An OpenWeather API key
-- The trained model file: Backend/aqi_model_8_features.pkl (generated from the notebook)
+- The trained model file: Backend/aqi_model_8_features.pkl 
 
 ---
 
