@@ -34,7 +34,6 @@ jobs:
           path: |
             Backend/
             !Backend/antenv/
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -45,19 +44,11 @@ jobs:
         with:
           name: python-app
 
-      - name: Debug - show structure
+      - name: Show full directory tree
         run: |
           echo "=== ROOT DIR ==="
           ls -al .
-          echo "=== PYTHON-APP DIR ==="
-          ls -al python-app || true
-          echo "=== BACKEND DIR? ==="
-          ls -al Backend || true
+          echo ""
+          echo "=== CONTENTS ==="
+          ls -R .
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'airPrediction'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FBE26043AB6B431D913F7DE889EF93AB }}
-          package: ./Backend
