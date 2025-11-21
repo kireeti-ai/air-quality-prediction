@@ -52,5 +52,6 @@ jobs:
           app-name: 'airPrediction'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FBE26043AB6B431D913F7DE889EF93AB }}
-          package: Backend
+          package: ./python-app/Backend
+
 
