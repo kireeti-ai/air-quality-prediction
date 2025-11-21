@@ -7,14 +7,12 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
-
       - uses: actions/checkout@v4
 
       - name: Set up Python version
@@ -42,13 +40,12 @@ jobs:
     needs: build
 
     steps:
-
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: python-app
 
-      - name: Debug: list everything
+      - name: Debug - show structure
         run: |
           echo "=== ROOT DIR ==="
           ls -al .
