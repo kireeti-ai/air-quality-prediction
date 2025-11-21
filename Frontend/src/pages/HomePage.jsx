@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
-import { HeartIcon as HeartOutlineIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartOutlineIcon } from '@heroicons/react/24/outline';
 import AqiGauge from '../components/AqiGauge.jsx';
 
 function useLocalStorage(key, initialValue) {
@@ -27,7 +27,7 @@ function useLocalStorage(key, initialValue) {
 }
 
 const getHealthAdvice = (quality) => {
-    switch (quality) {
+  switch (quality) {
     case 'Good': return { icon: '😊', message: "It's a beautiful day! Perfect for all outdoor activities." };
     case 'Satisfactory': return { icon: '🙂', message: 'Air quality is acceptable. Sensitive individuals may feel minor effects.' };
     case 'Moderate': return { icon: '😷', message: 'Unhealthy for sensitive groups. Limit prolonged outdoor exertion.' };
@@ -39,7 +39,7 @@ const getHealthAdvice = (quality) => {
 };
 
 const getQualityColors = (quality) => {
-    switch (quality) {
+  switch (quality) {
     case 'Good': return 'bg-aqi-good border-aqi-good-dark text-aqi-good-dark';
     case 'Satisfactory': return 'bg-aqi-satisfactory border-aqi-satisfactory-dark text-aqi-satisfactory-dark';
     case 'Moderate': return 'bg-aqi-moderate border-aqi-moderate-dark text-aqi-moderate-dark';
@@ -66,6 +66,9 @@ const tips = [
   "This prediction is made by a Random Forest model."
 ];
 
+// ⭐ UPDATE 1 — Add API BASE URL
+const API_BASE = "https://air-quality-prediction-nh36.onrender.com";
+
 const FavoriteCityCard = ({ city, onSelect }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -73,8 +76,8 @@ const FavoriteCityCard = ({ city, onSelect }) => {
   useEffect(() => {
     const fetchFavorite = async () => {
       try {
-        // --- THIS LINE IS UPDATED ---
-        const response = await fetch('/api/predict', {
+        // ⭐ UPDATE 2 — Use full backend URL
+        const response = await fetch(`${API_BASE}/api/predict`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ city }),
@@ -83,7 +86,7 @@ const FavoriteCityCard = ({ city, onSelect }) => {
         if (response.ok) {
           setData(result);
         }
-      } catch (e) { /* ignore */ }
+      } catch (e) {}
       setLoading(false);
     };
     fetchFavorite();
@@ -92,12 +95,10 @@ const FavoriteCityCard = ({ city, onSelect }) => {
   if (loading) {
     return <div className="p-4 bg-gray-200 rounded-lg animate-pulse h-[88px]"></div>;
   }
-  if (!data) {
-    return null;
-  }
+  if (!data) return null;
 
   return (
-    <div 
+    <div
       className={`p-4 rounded-lg shadow cursor-pointer transition-transform hover:scale-105 ${getQualityColors(data.aqi_quality)}`}
       onClick={() => onSelect(data)}
     >
@@ -119,20 +120,21 @@ export default function HomePage() {
   const [favorites, setFavorites] = useLocalStorage('aqiFavorites', ['Delhi', 'Mumbai']);
   const [tip] = useState(() => tips[Math.floor(Math.random() * tips.length)]);
 
-  // --- THIS LINE IS UPDATED ---
-  const API_URL = '/api/predict';
+  // ⭐ UPDATE 3 — Main API URL replaced
+  const API_URL = `${API_BASE}/api/predict`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!city) return;
     await fetchAndDisplay(city);
   };
-  
+
   const fetchAndDisplay = async (cityName) => {
     setIsLoading(true);
     setMainResult(null);
     setError('');
     setShowDetails(false);
+
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
@@ -141,11 +143,12 @@ export default function HomePage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'City not found.');
-      
+
       const advice = getHealthAdvice(data.aqi_quality);
       const reason = getPollutantReason(data.live_pollutants);
+
       setMainResult({ ...data, advice, reason });
-      setCity(''); 
+      setCity('');
 
     } catch (err) {
       setError(err.message);
@@ -158,7 +161,7 @@ export default function HomePage() {
     setMainResult(data);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  
+
   const toggleFavorite = (cityName) => {
     if (favorites.includes(cityName)) {
       setFavorites(favorites.filter(f => f !== cityName));
@@ -166,16 +169,16 @@ export default function HomePage() {
       setFavorites([...favorites, cityName]);
     }
   };
-  
+
   const isFavorite = (cityName) => favorites.includes(cityName);
 
   return (
     <div className="relative space-y-6">
-      
+
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold text-gray-800">What's the air like outside?</h1>
         <p className="text-gray-500 mt-1">Get a live AQI prediction for any city.</p>
-        
+
         <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
           <input
             type="text"
@@ -196,6 +199,7 @@ export default function HomePage() {
       </div>
 
       {isLoading && <div className="text-center p-6 text-gray-500"><p>Gathering live pollutant data...</p></div>}
+
       {error && (
         <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-md text-center">
           <strong>Error:</strong> {error}
@@ -204,24 +208,24 @@ export default function HomePage() {
 
       {mainResult && (
         <div className={`p-6 border-l-4 rounded-lg shadow-lg ${getQualityColors(mainResult.aqi_quality)} animate-fadeIn`}>
-          
+
           <div className="flex justify-between items-start">
             <h2 className="text-2xl font-bold">{mainResult.city}</h2>
             <button onClick={() => toggleFavorite(mainResult.city)} title="Add to favorites">
-              {isFavorite(mainResult.city) 
-                ? <HeartSolidIcon className="h-6 w-6 text-red-500" /> 
+              {isFavorite(mainResult.city)
+                ? <HeartSolidIcon className="h-6 w-6 text-red-500" />
                 : <HeartOutlineIcon className="h-6 w-6" />
               }
             </button>
           </div>
 
           <AqiGauge aqi={mainResult.predicted_aqi} quality={mainResult.aqi_quality} />
-          
+
           <div className="mt-4 text-center flex items-center justify-center gap-3 bg-white/50 p-3 rounded-md">
             <span className="text-3xl">{mainResult.advice.icon}</span>
             <p className="font-medium text-base">{mainResult.advice.message}</p>
           </div>
-          
+
           {mainResult.reason && (mainResult.aqi_quality === 'Poor' || mainResult.aqi_quality === 'Very Poor' || mainResult.aqi_quality === 'Severe') && (
             <p className="text-center text-sm mt-3">
               Main pollutant today appears to be <strong>{mainResult.reason}</strong>.
@@ -236,32 +240,30 @@ export default function HomePage() {
               {showDetails ? 'Hide' : 'Show'} Pollutant Details
               <ChevronDownIcon className={`h-4 w-4 ml-1 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
             </button>
-            
+
             {showDetails && (
-              <div className="mt-3 grid grid-cols-2 gap-2 text-sm bg-white/50 p-3 rounded animate-fadeIn">
-                <p><strong>PM2.5:</strong> {mainResult.live_pollutants.pm2_5} µg/m³</p>
-                <p><strong>PM10:</strong> {mainResult.live_pollutants.pm10} µg/m³</p>
-                <p><strong>CO:</strong> {mainResult.live_pollutants.co} µg/m³</p>
-                <p><strong>O3:</strong> {mainResult.live_pollutants.o3} µg/m³</p>
-                <p><strong>NO:</strong> {mainResult.live_pollutants.no} µg/m³</p>
-                <p><strong>NO2:</strong> {mainResult.live_pollutants.no2} µg/m³</p>
-                <p><strong>SO2:</strong> {mainResult.live_pollutants.so2} µg/m³</p>
-                <p><strong>NH3:</strong> {mainResult.live_pollutants.nh3} µg/m³</p>
-              </div>
+<div className="mt-3 grid grid-cols-2 gap-2 text-sm bg-white/50 p-3 rounded animate-fadeIn">
+  <p><strong>PM2.5:</strong> {mainResult.live_pollutants.pm2_5} µg/m³</p>
+  <p><strong>PM10:</strong> {mainResult.live_pollutants.pm10} µg/m³</p>
+  <p><strong>CO:</strong> {mainResult.live_pollutants.co} µg/m³</p>
+  <p><strong>O3:</strong> {mainResult.live_pollutants.o3} µg/m³</p>
+  <p><strong>NO:</strong> {mainResult.live_pollutants.no} µg/m³</p>
+  <p><strong>NO2:</strong> {mainResult.live_pollutants.no2} µg/m³</p>
+  <p><strong>SO2:</strong> {mainResult.live_pollutants.so2} µg/m³</p>
+  <p><strong>NH3:</strong> {mainResult.live_pollutants.nh3} µg/m³</p>
+</div>
             )}
           </div>
         </div>
       )}
-
-
 
       {favorites.length > 0 && (
         <div className="mt-8">
           <h3 className="text-xl font-bold text-gray-700 mb-3">Favorite Cities</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {favorites.map(favCity => (
-              <FavoriteCityCard 
-                key={favCity} 
+              <FavoriteCityCard
+                key={favCity}
                 city={favCity}
                 onSelect={handleFavoriteClick}
               />
@@ -269,7 +271,7 @@ export default function HomePage() {
           </div>
         </div>
       )}
-      
+
     </div>
   );
 }
