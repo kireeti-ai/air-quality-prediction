@@ -41,7 +41,6 @@ This document explains how to test the backend URL configuration changes.
 **Test**:
 ```bash
 # Build and run with docker-compose
-cd /home/runner/work/air-quality-prediction/air-quality-prediction
 docker-compose up --build
 
 # In another terminal, test the API
